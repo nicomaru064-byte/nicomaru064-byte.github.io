@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<title>Popup Combined</title>
+<style>
+/* チェックリストを非表示 */
+#popup-close{
+    display: none;
+}
+
+/* popup-closeチェックが押されたときに.popupに追記*/
+#popup-close:checked + .popup{
+    display: none;
+}
+
+.popup {
+    box-sizing: border-box;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
+    position: relative;
+    margin: auto;
+    width: 50vw;
+    height: 50vh;
+}
+.popup-content{
+    height: 100%;
+    margin: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.icon-close {
+    background: #000;
+    color: #fff;
+    font-size: 10px;
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<input type="checkbox" id="popup-close">
+<div class="popup">
+    <label for="popup-close" class="icon-close">×</label>
+    <div class="popup-content">
+        <p>ここに広告</p>
+    </div>
+</div>
+
+
+
+<script>
+// ページを開いたとき＆戻るボタンでも必ず実行されるイベント
+window.addEventListener('pageshow', () => {
+    const checkbox = document.getElementById('popup-close');
+    checkbox.checked = false; // ポップアップを必ず再表示
+});
+</script>
+
+<script>
+// --- 1分だけ非表示にする広告ロジック ---
+window.addEventListener('pageshow', () => {
+    const checkbox = document.getElementById('popup-close');
+
+    const now = Date.now();
+    const hideUntil = localStorage.getItem('popup_hide_until');
+
+    // まだ非表示期間中なら表示しない
+    if (hideUntil && now < Number(hideUntil)) {
+        checkbox.checked = true;
+        return;
+    }
+
+    // 非表示期間が終わっていれば強制的に表示
+    checkbox.checked = false;
+});
+
+// × を押した時に 1 分間非表示にする
+const checkbox = document.getElementById('popup-close');
+checkbox.addEventListener('change', () => {
+    if (checkbox.checked) {
+        const hideTime = Date.now() + 60 * 1000; // 1分
+        localStorage.setItem('popup_hide_until', hideTime);
+    }
+});
+</script>
+
+</body>
+</html>
